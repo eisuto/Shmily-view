@@ -3,7 +3,7 @@
     <v-app>
         <!-- 根据应用组件来调整你的内容 -->
         <v-main>
-            <v-row>
+            <v-row  style="margin-left: 30px">
                 <v-spacer></v-spacer>
                 <v-col cols="12" md="4">
                     <svg t="1628049530215" class="icon" viewBox="0 0 1024 1024" version="1.1"
@@ -17,7 +17,7 @@
                 </v-col>
                 <v-spacer></v-spacer>
             </v-row>
-            <v-row>
+            <v-row style="margin-left: 30px">
                 <v-spacer></v-spacer>
                 <v-col cols="12" md="4">
                     <div v-if="loginForm" class="text-h4 font-weight-bold">登录 Shmily</div>
@@ -216,9 +216,7 @@
             </v-container>
         </v-main>
 
-        <v-footer app>
-            <!-- -->
-        </v-footer>
+
     </v-app>
 </template>
 
@@ -253,11 +251,11 @@
             valid: false,
             show1: false,
             userForm: {
-                email:undefined,
+                email:"",
                 verifyCode: undefined,
                 mobile: undefined,
-                nikeName: undefined,
-                password: undefined,
+                nikeName: "waabdxiaoyi@gmail.com",
+                password: "123456",
                 rePassword: undefined,
             },
             snackbar: false,
@@ -369,15 +367,23 @@
     }
 </script>
 
-<style scoped lang="scss">
-    $input-font-size: 24px;
+<style scoped>
+    /*$input-font-size: 24px;*/
     .v-text-field {
-        font-size: $input-font-size;
+        font-size: 24px;
     }
 
     div[data-app='true'] {
-        /*background: url('../img/back.jpg') no-repeat center center fixed !important;*/
+        background: url('../assets/back.jpg') no-repeat center center fixed !important;
         background-size: cover;
+    }
+    .container{
+        width: 99%;
+    }
+    .v-main{
+        width: 100%;
+        /*background-image: url("../assets/back.svg");*/
+        /*background-size: 100%;*/
     }
 
 </style>

@@ -9,5 +9,5 @@ export function getAPI() {
     user_user_service: "http://82.156.231.128:8001"
   };
   // 返回根机
-  return api_dev;
+  return api_local;
 }
