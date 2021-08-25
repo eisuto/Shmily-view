@@ -5,6 +5,46 @@ const api = getAPI();
 
 
 /**
+ * 一个推文的评论列表
+ * @param query
+ * @returns {Promise<AxiosResponse<T>>}
+ */
+export function comments(query) {
+    return Vue.prototype.axios.post(
+        api.user_user_service + '/api/article/comments',
+        query,
+    )
+}
+
+
+
+/**
+ * 评论
+ * @param query
+ * @returns {Promise<AxiosResponse<T>>}
+ */
+export function comment(query) {
+    return Vue.prototype.axios.post(
+        api.user_user_service + '/api/article/comment',
+        query,
+    )
+}
+
+
+/**
+ * 取消点赞
+ * @param query
+ * @returns {Promise<AxiosResponse<T>>}
+ */
+export function unLike(query) {
+    return Vue.prototype.axios.post(
+        api.user_user_service + '/api/article/unLike',
+        query,
+    )
+}
+
+
+/**
  * 点赞
  * @param query
  * @returns {Promise<AxiosResponse<T>>}

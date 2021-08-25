@@ -1,15 +1,12 @@
 <template>
-    <div>
+    <v-app>
         <div class="container" v-for="tweet in tweetData" :key="tweet.id">
             <div class="profileImage">
                 <Avatar size="large" :image="tweet.avatarUrl"/>
             </div>
             <div class="tweet">
                 <div class="tweetDetail">
-                    <CustomText tag="span" class="name" font="fw-bold">{{
-                        tweet.nikeName
-                        }}
-                    </CustomText>
+                    <CustomText tag="span" class="name" font="fw-bold">{{ tweet.nikeName }}</CustomText>
                     <!--                    <CustomText class="username">@{{ tweet.username }}</CustomText>-->
                     <CustomText class="date">{{ tweet.createTime.substr(0,16) }}</CustomText>
                 </div>
@@ -20,28 +17,29 @@
                 <!--                    <img :src="tweet.img" alt=""/>-->
                 <!--                </div>-->
                 <div class="tweetAction">
-                    <div>
+                    <!--评论-->
+                    <div @click="commentOpen(tweet)">
                         <icon class="actionHover comment" name="comment"/>
-                        <CustomText class="comment">{{
-                            tweet.commentNum
-                            }}
+                        <CustomText class="comment">
+                            {{ tweet.commentNum }}
                         </CustomText>
                     </div>
+                    <!--转发-->
                     <div>
                         <icon class="actionHover rt" name="rt"/>
-                        <CustomText class="rt">{{
-                            tweet.transpondNum
-                            }}
+                        <CustomText class="rt">
+                            {{tweet.transpondNum }}
                         </CustomText>
                     </div>
-                    <div @click="like(tweet.id)">
-
-                        <icon   class="actionHover fav"  name="fav"/>
-                        <CustomText
-                                class="fav"
-                        >{{ tweet.loveNum }}
-                        </CustomText
-                        >
+                    <!--点赞-->
+                    <div @click="likeArticle(tweet)">
+                        <v-icon v-if="tweet.liked" style="font-size: 21px;margin:0px 5px 0 5px" color="#E0245E">
+                            mdi-heart
+                        </v-icon>
+                        <icon v-else class="actionHover fav" name="fav"/>
+                        <CustomText class="fav">
+                            {{ tweet.loveNum }}
+                        </CustomText>
                     </div>
                     <div>
                         <icon class="actionHover share" name="share"/>
@@ -49,19 +47,90 @@
                 </div>
             </div>
         </div>
-    </div>
+        <!--    评论弹出-->
+        <v-dialog v-model="commentDialog" width="650" style="top:-20px">
+            <v-card>
+                <v-card-title class="text-h5 grey lighten-2"></v-card-title>
+
+                <v-divider></v-divider>
+                <div style="padding: 20px">
+                    <div class="profileImage" style="display:inline-block !important;width: 50px;margin-right: 15px">
+                        <Avatar size="large" :image="thisTweet.avatarUrl"/>
+                    </div>
+                    <div class="tweetDetail" style="display:inline-block !important; vertical-align:top;">
+                        <CustomText tag="span" class="name" font="fw-bold"> {{ thisTweet.nikeName }}</CustomText>
+                        <CustomText class="date" style="margin-left: 5px"> {{ thisTweet.createTime.substr(0,16) }}
+                        </CustomText>
+                    </div>
+                    <div class="tweetText" style="position:relative; top:-30px;left:65px;width: 380px">
+                        <CustomText font="large">{{ thisTweet.info }}</CustomText>
+                    </div>
+                    <v-divider></v-divider>
+                    <br>
+                    <div>
+                        <v-row>
+                            <v-col cols="12" md="1">
+                                <v-avatar color="primary" size="50"></v-avatar>
+                            </v-col>
+                            <v-col cols="12" md="11">
+                                <div >
+                                    <span style="margin-left: 12px;">
+                                        回复 <a href="javascript:">@{{thisTweet.nikeName}}</a>
+                                    </span>
+                                    <v-textarea
+                                            flat
+                                            solo
+                                            clearable
+                                            class="ma-0 pa-0" hide-details
+                                            style="font-size: 20px;padding: 0px"
+                                            name="input-7-1"
+                                            auto-grow
+                                            v-model="thisTweet.comment"
+                                    ></v-textarea>
+                                </div>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-btn  elevation="0"
+                                    color="#fb7f26"
+                                    dark
+                                    @click="commentArticle()"
+                                    rounded
+                                    style="margin-left: 88%;font-weight: bolder">回复</v-btn>
+                        </v-row>
+                    </div>
+
+                </div>
+
+            </v-card>
+        </v-dialog>
+    </v-app>
+
+
 </template>
 
 <script>
     import Avatar from "@/components/Avatar";
     import CustomText from "@/components/CustomText";
-    import {follows, like} from "../js/article"
+    import {comment, comments, follows, like, unLike} from "../js/article"
     import {register} from "../js/user";
+    import Vuetify from "vuetify";
 
     export default {
+        vuetify: new Vuetify(),
         name: "Tweet",
         data() {
             return {
+                // 当前推文
+                thisTweet: {
+                    commentList:[],
+                    comment:'',
+                    avatarUrl: '',
+                    nikeName: '',
+                    createTime: '',
+                    info: '',
+                },
+                commentDialog: false,
                 // tweetData: [
                 //     {
                 //         id: 1,
@@ -96,8 +165,26 @@
             this.getArticles();
         },
         methods: {
-            like(id){
-                like({id: id,userId:JSON.parse(sessionStorage.getItem("userInfo")).id}).then(
+            // 一个推文的全部评论
+            commentsArticle(){
+                comments({id: this.thisTweet.id,}).then(
+                    res => {
+                        const data = res.data;
+                        if (data.code === 200) {
+                            this.thisTweet.commentList = data.data;
+                        } else {
+                            console.log(res.msg)
+                        }
+                    }
+                );
+            },
+            // 评论
+            commentArticle(){
+                comment({
+                    id: this.thisTweet.id,
+                    userId: JSON.parse(sessionStorage.getItem("userInfo")).id,
+                    comment:this.thisTweet.comment,
+                }).then(
                     res => {
                         const data = res.data;
                         if (data.code === 200) {
@@ -108,6 +195,45 @@
                     }
                 );
             },
+            // 评论弹出层
+            commentOpen(tweet) {
+                this.thisTweet = tweet;
+                this.commentsArticle();
+                this.commentDialog = true;
+            },
+            // 点赞
+            likeArticle(tweet) {
+                // 此推文 点过赞
+                if (tweet.liked === 1) {
+                    // 取消点赞
+                    unLike({id: tweet.id, userId: JSON.parse(sessionStorage.getItem("userInfo")).id}).then(
+                        res => {
+                            const data = res.data;
+                            if (data.code === 200) {
+                                this.getArticles();
+                            } else {
+                                console.log(res.msg)
+                            }
+                        }
+                    );
+                }
+                //没有点过赞
+                else {
+                    like({id: tweet.id, userId: JSON.parse(sessionStorage.getItem("userInfo")).id}).then(
+                        res => {
+                            const data = res.data;
+                            if (data.code === 200) {
+                                this.getArticles();
+                            } else {
+                                console.log(res.msg)
+                            }
+                        }
+                    );
+                }
+
+            },
+
+
             getArticles() {
                 follows({id: JSON.parse(sessionStorage.getItem("userInfo")).id}).then(
                     res => {
@@ -126,6 +252,9 @@
 </script>
 
 <style lang="scss" scoped>
+    .v-dialog__content{
+        top: -200px;
+    }
     .container {
         width: 100%;
         display: flex;

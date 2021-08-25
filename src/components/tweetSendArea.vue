@@ -92,6 +92,7 @@
                     res => {
                         const data = res.data;
                         if (data.code === 200) {
+                            location.reload();
                             console.log(data)
                         } else {
                             console.log(data.msg)
