@@ -15,9 +15,10 @@
   "main": "index.js",
   "dependencies": {
     "core-js": "^3.6.5",
+    "qs": "latest",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
-    "qs": "latest"
+    "vue-upload-imgs": "^1.0.3"
   },
   "devDependencies": {
     "@mdi/font": "^5.9.55",

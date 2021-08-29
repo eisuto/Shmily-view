@@ -54,6 +54,11 @@ const routes = [
             {
                 path: "*",
                 redirect: "home"
+            },
+            // 推文详情
+            {
+                path:"/articleInfo",
+                component:()=> import("@/views/ArticleInfo")
             }
 
         ]

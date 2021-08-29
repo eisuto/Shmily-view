@@ -4,7 +4,7 @@
             <div class="profileImage">
                 <Avatar size="large" :image="tweet.avatarUrl"/>
             </div>
-            <div class="tweet">
+            <div class="tweet" >
                 <div class="tweetDetail">
                     <CustomText tag="span" class="name" font="fw-bold">{{ tweet.nikeName }}</CustomText>
                     <!--                    <CustomText class="username">@{{ tweet.username }}</CustomText>-->
@@ -48,7 +48,7 @@
             </div>
         </div>
         <!--    评论弹出-->
-        <v-dialog v-model="commentDialog" width="650" style="top:-20px">
+        <v-dialog v-model="commentDialog" width="650">
             <v-card>
                 <v-card-title class="text-h5 grey lighten-2"></v-card-title>
 
@@ -67,7 +67,21 @@
                     </div>
                     <v-divider></v-divider>
                     <br>
-                    <div>
+                    <div v-for="item in thisTweet.commentList" :key="item.id">
+                        <div class="profileImage" style="display:inline-block !important;width: 50px;margin-right: 15px">
+                            <Avatar size="large" :image="item.avatarUrl"/>
+                        </div>
+                        <div class="tweetDetail" style="display:inline-block !important; vertical-align:top;">
+                            <CustomText tag="span" class="name" font="fw-bold"> {{ item.nikeName }}</CustomText>
+                            <CustomText class="date" style="margin-left: 5px"> {{ item.createTime.substr(0,16) }}</CustomText>
+                        </div>
+                        <div class="tweetText" style="position:relative; top:-30px;left:65px;width: 380px">
+                            <span style="font-size: 14px;color: #536471">回复 <a>@{{thisTweet.nikeName}}</a></span><br>
+                            <CustomText font="large">{{ item.comment }}</CustomText>
+                        </div>
+                    </div>
+                    <v-divider v-if="thisTweet.commentList.length>0"></v-divider>
+                    <div style="margin-top: 10px">
                         <v-row>
                             <v-col cols="12" md="1">
                                 <v-avatar color="primary" size="50"></v-avatar>
@@ -172,6 +186,8 @@
                         const data = res.data;
                         if (data.code === 200) {
                             this.thisTweet.commentList = data.data;
+                            // 弹出
+                            this.commentDialog = true;
                         } else {
                             console.log(res.msg)
                         }
@@ -188,7 +204,9 @@
                     res => {
                         const data = res.data;
                         if (data.code === 200) {
+                            this.thisTweet.comment = '';
                             this.getArticles();
+                            this.commentsArticle();
                         } else {
                             console.log(res.msg)
                         }
@@ -199,7 +217,6 @@
             commentOpen(tweet) {
                 this.thisTweet = tweet;
                 this.commentsArticle();
-                this.commentDialog = true;
             },
             // 点赞
             likeArticle(tweet) {
@@ -252,9 +269,7 @@
 </script>
 
 <style lang="scss" scoped>
-    .v-dialog__content{
-        top: -200px;
-    }
+
     .container {
         width: 100%;
         display: flex;

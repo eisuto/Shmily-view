@@ -2,7 +2,7 @@
     <div class="main">
         <Sidebar />
         <div class="container">
-            内部路由
+<!--            内部路由-->
             <router-view />
         </div>
             <RightBar class="rightbar" />

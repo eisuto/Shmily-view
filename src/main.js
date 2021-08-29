@@ -4,6 +4,7 @@ import router from "./router";
 import axios from 'axios'
 import vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
+import VueUploadImgs from 'vue-upload-imgs'
 import "@/css/main.scss";
 import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
 
@@ -11,6 +12,9 @@ import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loade
 Vue.component("icon", require("./components/icons").default);
 // ui库
 Vue.use(vuetify);
+// 上传组件
+Vue.use(VueUploadImgs);
+
 // 表单请求
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 axios.defaults.transformRequest = [function (data) {
