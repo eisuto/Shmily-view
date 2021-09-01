@@ -2,7 +2,8 @@ export function getAPI() {
   // 本地
   const api_local = {
     // 用户侧 - 用户服务
-    user_user_service: "http://127.0.0.1:8001"
+    user_user_service: "http://127.0.0.1:8001",
+    user_nginx:"http://127.0.0.1"
   };
   const api_dev = {
     // 用户侧 - 用户服务

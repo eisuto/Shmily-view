@@ -5,6 +5,25 @@ const api = getAPI();
 
 
 /**
+ * 上传文件
+ * @param query
+ * @returns {Promise<AxiosResponse<T>>}
+ */
+export function upload(query){
+    // axios.defaults.headers.post['Content-Type'] = 'multipart/form-data';
+    const config = {
+        headers: { type: "file"}
+    };
+    console.log(query)
+    return  Vue.prototype.axios.post(
+            api.user_user_service + "/api/file/upload",
+            query,
+            config
+        )
+}
+
+
+/**
  * 一个推文的评论列表
  * @param query
  * @returns {Promise<AxiosResponse<T>>}
@@ -15,7 +34,6 @@ export function comments(query) {
         query,
     )
 }
-
 
 
 /**

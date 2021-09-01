@@ -4,7 +4,10 @@ import router from "./router";
 import axios from 'axios'
 import vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 import VueUploadImgs from 'vue-upload-imgs'
+import md5 from 'js-md5';
 import "@/css/main.scss";
 import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
 
@@ -24,8 +27,10 @@ axios.defaults.transformRequest = [function (data) {
     }
     return ret
 }];
+Vue.prototype.md5 = md5;
 Vue.prototype.axios = axios;
 Vue.config.productionTip = false;
+Vue.use(ElementUI);
 
 new Vue({
     router,

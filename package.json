@@ -15,6 +15,8 @@
   "main": "index.js",
   "dependencies": {
     "core-js": "^3.6.5",
+    "element-ui": "^2.15.5",
+    "js-md5": "^0.7.3",
     "qs": "latest",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",

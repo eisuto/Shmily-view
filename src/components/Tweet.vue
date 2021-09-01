@@ -4,18 +4,45 @@
             <div class="profileImage">
                 <Avatar size="large" :image="tweet.avatarUrl"/>
             </div>
-            <div class="tweet" >
-                <div class="tweetDetail">
+            <div class="tweet">
+                <div class="tweetDetail" style="margin-left: 6px">
                     <CustomText tag="span" class="name" font="fw-bold">{{ tweet.nikeName }}</CustomText>
-                    <!--                    <CustomText class="username">@{{ tweet.username }}</CustomText>-->
                     <CustomText class="date">{{ tweet.createTime.substr(0,16) }}</CustomText>
                 </div>
-                <div class="tweetText" style="margin-top: 3px">
+                <!-- 正文-->
+                <div class="tweetText" style="margin: 3px 0px 0px 6px">
                     <CustomText font="large">{{ tweet.info }}</CustomText>
                 </div>
-                <!--                <div class="tweetImage" v-if="tweet.img.length > 3">-->
-                <!--                    <img :src="tweet.img" alt=""/>-->
-                <!--                </div>-->
+                
+                <!--图片-->
+                <div style="border-radius: 20px;overflow: hidden;">
+                    <v-row dense>
+                        <v-col v-for=" item in tweet.imgUrls" cols="6">
+                            <v-img
+                                    @click="openImg(api.user_nginx + item)"
+                                    aspect-ratio="1"
+                                    :src="api.user_nginx + item">
+
+                            </v-img>
+                        </v-col>
+                    </v-row>
+                </div>
+                <!--                图片弹出-->
+                <!--                <el-dialog-->
+                <!--                        :visible.sync="dialogImg"-->
+                <!--                        width="34%">-->
+                <!--                    <v-img-->
+                <!--                            style="max-height: 800px"-->
+                <!--                            aspect-ratio="1"-->
+                <!--                            :src="bigImg"></v-img>-->
+                <!--                    <span slot="footer" class="dialog-footer">-->
+                <!--                    </span>-->
+                <!--                </el-dialog>-->
+
+
+                <div class="tweetImage">
+                    <!--                    <img :src="api.user_nginx + item" alt=""/>-->
+                </div>
                 <div class="tweetAction">
                     <!--评论-->
                     <div @click="commentOpen(tweet)">
@@ -47,6 +74,25 @@
                 </div>
             </div>
         </div>
+        <v-dialog
+                  v-model="dialogImg"
+                  width="40%"
+                  style="height: 100%"
+        >
+            <v-img
+                    width="auto"
+                    contain
+                    max-height="760px"
+                    :src="bigImg">
+
+            </v-img>
+<!--            <v-row style="height: 800px">-->
+<!--                <v-col cols="4" offset-md="4">-->
+<!--                    -->
+<!--                </v-col>-->
+<!--            </v-row>-->
+
+        </v-dialog>
         <!--    评论弹出-->
         <v-dialog v-model="commentDialog" width="650">
             <v-card>
@@ -68,26 +114,32 @@
                     <v-divider></v-divider>
                     <br>
                     <div v-for="item in thisTweet.commentList" :key="item.id">
-                        <div class="profileImage" style="display:inline-block !important;width: 50px;margin-right: 15px">
+                        <div class="profileImage"
+                             style="display:inline-block !important;width: 50px;margin-right: 15px">
                             <Avatar size="large" :image="item.avatarUrl"/>
                         </div>
                         <div class="tweetDetail" style="display:inline-block !important; vertical-align:top;">
                             <CustomText tag="span" class="name" font="fw-bold"> {{ item.nikeName }}</CustomText>
-                            <CustomText class="date" style="margin-left: 5px"> {{ item.createTime.substr(0,16) }}</CustomText>
+                            <CustomText class="date" style="margin-left: 5px"> {{ item.createTime.substr(0,16) }}
+                            </CustomText>
                         </div>
                         <div class="tweetText" style="position:relative; top:-30px;left:65px;width: 380px">
                             <span style="font-size: 14px;color: #536471">回复 <a>@{{thisTweet.nikeName}}</a></span><br>
                             <CustomText font="large">{{ item.comment }}</CustomText>
                         </div>
                     </div>
-                    <v-divider v-if="thisTweet.commentList.length>0"></v-divider>
+                    <v-divider v-if="thisTweet.commentList.length && thisTweet.commentList.length>0"></v-divider>
                     <div style="margin-top: 10px">
                         <v-row>
                             <v-col cols="12" md="1">
-                                <v-avatar color="primary" size="50"></v-avatar>
+                                <v-avatar color="primary" size="50">
+                                    <img alt="Avatar"
+                                         :src="userInfo.avatarUrl">
+                                </v-avatar>
+                                <!--                                <Avatar size="large" :image="item.avatarUrl"/>-->
                             </v-col>
                             <v-col cols="12" md="11">
-                                <div >
+                                <div>
                                     <span style="margin-left: 12px;">
                                         回复 <a href="javascript:">@{{thisTweet.nikeName}}</a>
                                     </span>
@@ -105,12 +157,13 @@
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-btn  elevation="0"
-                                    color="#fb7f26"
-                                    dark
-                                    @click="commentArticle()"
-                                    rounded
-                                    style="margin-left: 88%;font-weight: bolder">回复</v-btn>
+                            <v-btn elevation="0"
+                                   color="#fb7f26"
+                                   dark
+                                   @click="commentArticle()"
+                                   rounded
+                                   style="margin-left: 88%;font-weight: bolder">回复
+                            </v-btn>
                         </v-row>
                     </div>
 
@@ -128,6 +181,7 @@
     import CustomText from "@/components/CustomText";
     import {comment, comments, follows, like, unLike} from "../js/article"
     import {register} from "../js/user";
+    import {getAPI} from "../js/config";
     import Vuetify from "vuetify";
 
     export default {
@@ -135,43 +189,20 @@
         name: "Tweet",
         data() {
             return {
+                dialogImg: false,
+                bigImg: '',
+                api: getAPI(),
+                userInfo: JSON.parse(sessionStorage.getItem("userInfo")),
                 // 当前推文
                 thisTweet: {
-                    commentList:[],
-                    comment:'',
+                    commentList: [],
+                    comment: '',
                     avatarUrl: '',
                     nikeName: '',
                     createTime: '',
                     info: '',
                 },
                 commentDialog: false,
-                // tweetData: [
-                //     {
-                //         id: 1,
-                //         avatarUrl:
-                //             "https://www.shareicon.net/data/128x128/2016/05/24/770117_people_512x512.png",
-                //         img: "",
-                //         nikeName: "WangXiang",
-                //         date: "2h",
-                //         info: "See how math I love you.",
-                //         commentNum: "125",
-                //         loveNum: "964",
-                //         transpondNum: "221"
-                //     },
-                //     {
-                //         id: 4,
-                //         avatarUrl:
-                //             "https://www.shareicon.net/data/128x128/2016/05/24/770117_people_512x512.png",
-                //         img:
-                //             "https://i.pinimg.com/originals/3b/8a/d2/3b8ad2c7b1be2caf24321c852103598a.jpg",
-                //         nikeName: "李佳奇",
-                //         date: "2d",
-                //         info: "分享美图",
-                //         commentNum: "4",
-                //         loveNum: "86",
-                //         transpondNum: "8"
-                //     }
-                // ],
                 tweetData: [],
             };
         },
@@ -179,8 +210,12 @@
             this.getArticles();
         },
         methods: {
+            openImg(src) {
+                this.bigImg = src;
+                this.dialogImg = true;
+            },
             // 一个推文的全部评论
-            commentsArticle(){
+            commentsArticle() {
                 comments({id: this.thisTweet.id,}).then(
                     res => {
                         const data = res.data;
@@ -195,11 +230,11 @@
                 );
             },
             // 评论
-            commentArticle(){
+            commentArticle() {
                 comment({
                     id: this.thisTweet.id,
                     userId: JSON.parse(sessionStorage.getItem("userInfo")).id,
-                    comment:this.thisTweet.comment,
+                    comment: this.thisTweet.comment,
                 }).then(
                     res => {
                         const data = res.data;
@@ -270,6 +305,14 @@
 
 <style lang="scss" scoped>
 
+    ::v-deep .el-dialog {
+        box-shadow: none;
+    }
+
+    ::v-deep .row--dense > .col, .row--dense > [class*=col-] {
+        padding: 2px !important;
+    }
+
     .container {
         width: 100%;
         display: flex;
@@ -321,7 +364,6 @@
             .tweetAction {
                 display: flex;
                 width: 100%;
-                margin-top: 7px;
 
                 div {
                     display: flex;
