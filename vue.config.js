@@ -1,6 +1,7 @@
 // vue.config.js
 module.exports = {
     devServer: {
+        port: 91,
         overlay: {
             warnings: false, //不显示警告
             errors: false	//不显示错误

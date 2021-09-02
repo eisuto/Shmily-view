@@ -68,22 +68,13 @@
                     <span class="iconFont"> {{userInfo.createTime.substr(0,10)}} 加入</span>
                 </v-col>
             </v-row>
-            <!--            选项卡-->
+            <!--选项卡-->
             <v-row>
-                <!--                <v-tabs-->
-                <!--                        fixed-tabs-->
-                <!--                        v-model="tab"-->
-                <!--                        background-color="transparent"-->
-                <!--                        color="basil"-->
-                <!--                        grow-->
-                <!--                >-->
-                <!--                    <v-tab key="1">文章</v-tab>-->
-                <!--                </v-tabs>-->
                 <v-tabs grow
                         v-model="tab" color="#fb7f26">
                     <v-tab class="text-body-2 font-weight-bold"> 文章 </v-tab>
                     <v-tab-item>
-                        文章
+                        <Tweet></Tweet>
                     </v-tab-item>
                     <v-tab class="text-body-2 font-weight-bold"> 转发和回复 </v-tab>
                     <v-tab-item>
@@ -104,7 +95,7 @@
 
 <script>
     import Vuetify from "vuetify";
-
+    import Tweet from "../components/Tweet"
     export default {
         vuetify: new Vuetify(),
         name: "Profile",
@@ -122,6 +113,7 @@
                 this.$router.go(-1)
             }
         },
+        components:{ Tweet}
     };
 </script>
 
