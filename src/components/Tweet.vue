@@ -13,33 +13,18 @@
                 <div class="tweetText" style="margin: 3px 0px 0px 6px">
                     <CustomText font="large">{{ tweet.info }}</CustomText>
                 </div>
-                
                 <!--图片-->
-                <div style="border-radius: 20px;overflow: hidden;">
+                <div style="border-radius: 20px;overflow: hidden;margin-top: 10px">
                     <v-row dense>
-                        <v-col v-for=" item in tweet.imgUrls" cols="6">
+                        <v-col v-for=" item in tweet.imgUrls" :cols="getCols(tweet.imgUrls)">
                             <v-img
                                     @click="openImg(api.user_nginx + item)"
                                     aspect-ratio="1"
                                     :src="api.user_nginx + item">
-
                             </v-img>
                         </v-col>
                     </v-row>
                 </div>
-                <!--                图片弹出-->
-                <!--                <el-dialog-->
-                <!--                        :visible.sync="dialogImg"-->
-                <!--                        width="34%">-->
-                <!--                    <v-img-->
-                <!--                            style="max-height: 800px"-->
-                <!--                            aspect-ratio="1"-->
-                <!--                            :src="bigImg"></v-img>-->
-                <!--                    <span slot="footer" class="dialog-footer">-->
-                <!--                    </span>-->
-                <!--                </el-dialog>-->
-
-
                 <div class="tweetImage">
                     <!--                    <img :src="api.user_nginx + item" alt=""/>-->
                 </div>
@@ -75,9 +60,9 @@
             </div>
         </div>
         <v-dialog
-                  v-model="dialogImg"
-                  width="40%"
-                  style="height: 100%"
+                v-model="dialogImg"
+                width="40%"
+                style="height: 100%"
         >
             <v-img
                     width="auto"
@@ -86,11 +71,6 @@
                     :src="bigImg">
 
             </v-img>
-<!--            <v-row style="height: 800px">-->
-<!--                <v-col cols="4" offset-md="4">-->
-<!--                    -->
-<!--                </v-col>-->
-<!--            </v-row>-->
 
         </v-dialog>
         <!--    评论弹出-->
@@ -210,6 +190,17 @@
             this.getArticles();
         },
         methods: {
+            getCols(array) {
+                if (array && array.length === 3) {
+                    return 4;
+                }
+                if (array && array.length > 1) {
+                    return 6;
+                } else {
+                    return 12;
+                }
+            },
+
             openImg(src) {
                 this.bigImg = src;
                 this.dialogImg = true;
@@ -255,6 +246,8 @@
             },
             // 点赞
             likeArticle(tweet) {
+                // this.$toast.error("My toast content", {
+                // });
                 // 此推文 点过赞
                 if (tweet.liked === 1) {
                     // 取消点赞

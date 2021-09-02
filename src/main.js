@@ -10,6 +10,30 @@ import VueUploadImgs from 'vue-upload-imgs'
 import md5 from 'js-md5';
 import "@/css/main.scss";
 import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
+import Toast from "vue-toastification";
+import 'material-design-icons-iconfont/dist/material-design-icons.css' // 确保您正在使用 css-loader
+
+import "vue-toastification/dist/index.css";
+
+const options = {
+    transition: 'Vue-Toastification__fade',
+    maxToasts: 5,
+    newestOnTop: true,
+    position: 'top-center',
+    timeout: 2000,
+    closeOnClick: true,
+    pauseOnFocusLoss: true,
+    pauseOnHover: false,
+    draggable: true,
+    draggablePercent: 0.7,
+    showCloseButtonOnHover: false,
+    hideProgressBar: true,
+    closeButton: 'button',
+    icon: true,
+    rtl: false
+};
+Vue.use(Toast, options);
+
 
 // 图标库
 Vue.component("icon", require("./components/icons").default);
@@ -39,6 +63,6 @@ new Vue({
 
 export default new vuetify({
     icons: {
-        iconfont: 'mdi', // 默认值 - 仅用于展示目的
+        iconfont: 'mdi',
     },
 })
